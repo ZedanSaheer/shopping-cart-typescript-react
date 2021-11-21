@@ -5,7 +5,9 @@ import { LinearProgress } from '@material-ui/core';
 import { Grid } from '@material-ui/core';
 import { AddShoppingCart } from '@material-ui/icons';
 import { Badge } from '@material-ui/core';
-import { wrapper } from './App.styles';
+import { Wrapper , StyledButton} from './App.styles';
+import Item from './Components/item/Item/item';
+import Cart from './Components/item/Cart/Cart';
 
 //types
 export type CartItemType = {
@@ -24,10 +26,14 @@ const getProducts = async () : Promise<CartItemType[]> => {
 }
 
 const App= () => {
+  const [cartOpen,setCartOpen] = useState(false);
+  const [cartItems,setCartItems] = useState([] as CartItemType[]);
   const {data,isLoading,error} = useQuery<CartItemType[]>('products',getProducts);
   console.log(data);
-  const getTotalItems = () => null;
-  const handleAddToCart = () => null;
+  const getTotalItems = (items:CartItemType[]) => {
+    return items.reduce((ack:number,item)=>ack+item.amount,0);
+  };
+  const handleAddToCart = (clickedItem:CartItemType) => null;
   const handleRemoveFromCart = () => null;
 
   if(isLoading) return <LinearProgress/>
@@ -35,7 +41,24 @@ const App= () => {
 
   return (
     <div className="App">
-
+        <Wrapper>
+          <Drawer anchor="right" open={cartOpen} onClose={()=>setCartOpen(false)}>
+            <Cart cartItems={cartItems} addToCart={handleAddToCart}
+            removeFromCart={handleRemoveFromCart}/>
+          </Drawer>
+          <StyledButton onClick={()=>setCartOpen(true)}>
+            <Badge badgeContent={getTotalItems(cartItems)} color='error'>
+              <AddShoppingCart/>
+            </Badge>
+          </StyledButton>
+          <Grid container spacing={3}>
+              {data?.map((item)=>{
+                return <Grid item key={item.id} xs={12} md={6} sm={4}>
+                  <Item item={item} handleAddToCart={handleAddToCart}/>
+                </Grid>
+              })}
+          </Grid>
+        </Wrapper>
     </div>
   );
 }
