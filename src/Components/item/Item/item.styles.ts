@@ -9,6 +9,7 @@ width:100%;
 border:1px solid lightblue;
 border-radius:20px;
 height:100%;
+background-color:black;
 
 button{
     border-radius: 0 0 20px 20px;
